@@ -1,1 +1,526 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>By Your Budget - What Can You Buy Today?</title>
+  <link rel="stylesheet" href="styles.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+</head>
+<body>
+  <!-- Mobile Container Wrapper -->
+  <div class="app-viewport">
+    
+    <!-- Top Header Bar -->
+    <header class="app-header">
+      <div class="logo-area" onclick="app.navToScreen('screen-catalog')" style="cursor: pointer;" title="Back to Catalog">
+        <div class="brand-badge">💰</div>
+        <div>
+          <h1 class="brand-title">By Your Budget</h1>
+          <p class="brand-subtitle">Shop only what fits your pocket</p>
+        </div>
+      </div>
+      <div class="header-right">
+        <div class="cart-pill" id="cartPill" onclick="app.navToScreen('screen-checkout')" title="View Selected Items">
+          🛒 <span id="cartCount">0</span>
+        </div>
+        <div id="authHeaderArea">
+          <!-- Injected dynamically: Sign In or Orders/Sign Out -->
+        </div>
+      </div>
+    </header>
 
+    <!-- User Status Bar (Active when logged in) -->
+    <div id="userStatusBar" class="user-status-bar" style="display: none;">
+      <div class="user-status-info">
+        <span class="user-status-dot">●</span>
+        <span class="user-status-email" id="userStatusEmail">user@example.com</span>
+      </div>
+      <div class="user-status-actions">
+        <button type="button" class="user-status-btn" onclick="app.navToScreen('screen-orders')" title="My Orders">
+          📦 Orders (<span id="userOrdersCount">0</span>)
+        </button>
+        <button type="button" class="user-status-btn signout" onclick="app.signOut()" title="Sign Out">
+          Sign Out
+        </button>
+      </div>
+    </div>
+
+    <main class="app-main">
+
+      <!-- ========================================== -->
+      <!-- SCREEN 1: ASK ABOUT WHAT YOU WANT TO BUY  -->
+      <!-- ========================================== -->
+      <section id="screen-catalog" class="screen-view active">
+        <!-- Budget Question Banner -->
+        <div class="budget-card">
+          <label class="budget-label" for="customBudgetInput">
+            <span class="label-badge">Step 1</span>
+            What is your budget today?
+          </label>
+          <div class="budget-input-row">
+            <span class="currency-symbol">$</span>
+            <input 
+              type="number" 
+              id="customBudgetInput" 
+              class="budget-big-input" 
+              min="5" 
+              max="200" 
+              value="35"
+              step="5"
+              placeholder="35"
+              aria-label="Set your budget amount in dollars"
+            >
+          </div>
+          
+          <!-- Quick Preset Buttons -->
+          <div class="quick-presets">
+            <span class="preset-title">Quick pick:</span>
+            <div class="preset-buttons">
+              <button type="button" class="preset-btn" onclick="app.setBudget(10)">$10</button>
+              <button type="button" class="preset-btn" onclick="app.setBudget(25)">$25</button>
+              <button type="button" class="preset-btn active" onclick="app.setBudget(35)">$35</button>
+              <button type="button" class="preset-btn" onclick="app.setBudget(50)">$50</button>
+              <button type="button" class="preset-btn" onclick="app.setBudget(100)">$100</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Filter / Category Chips -->
+        <div class="category-scroll-wrapper">
+          <div class="category-chips" id="categoryChips">
+            <button class="chip active" data-cat="all" onclick="app.filterCategory('all')">✨ All Items</button>
+            <button class="chip" data-cat="gadgets" onclick="app.filterCategory('gadgets')">🎧 Tech & Gadgets</button>
+            <button class="chip" data-cat="home" onclick="app.filterCategory('home')">☕ Home & Coffee</button>
+            <button class="chip" data-cat="lifestyle" onclick="app.filterCategory('lifestyle')">🎒 Lifestyle</button>
+            <button class="chip" data-cat="snacks" onclick="app.filterCategory('snacks')">🍫 Treats & Snacks</button>
+          </div>
+        </div>
+
+        <!-- Catalog Status Bar -->
+        <div class="catalog-header">
+          <h2 class="section-heading" id="catalogTitle">Things in your budget (Under $35)</h2>
+          <span class="items-count-badge" id="itemsCountBadge">0 items</span>
+        </div>
+
+        <!-- Items Grid -->
+        <div class="items-grid" id="itemsGrid">
+          <!-- Populated by app.js -->
+        </div>
+
+        <!-- Floating Checkout Bar when items selected -->
+        <div class="floating-checkout-bar" id="floatingBar">
+          <div class="floating-info">
+            <span class="floating-count" id="floatingCount">0 items selected</span>
+            <span class="floating-total" id="floatingTotal">$0.00</span>
+          </div>
+          <button class="big-action-btn primary" onclick="app.navToScreen('screen-checkout')">
+            Go to Checkout ➔
+          </button>
+        </div>
+      </section>
+
+      <!-- ========================================== -->
+      <!-- SCREEN 2: CHECKOUT (QUANTITY & PAYMENT)    -->
+      <!-- ========================================== -->
+      <section id="screen-checkout" class="screen-view">
+        <div class="screen-back-row">
+          <button class="icon-back-btn" onclick="app.navToScreen('screen-catalog')">
+            ← Back to items
+          </button>
+          <span class="step-indicator">Step 2 of 3</span>
+        </div>
+
+        <div class="screen-title-group">
+          <h2 class="screen-title">How many do you want?</h2>
+          <p class="screen-desc">Adjust quantities to stay right on target with your budget.</p>
+        </div>
+
+        <!-- Budget Tracker Bar -->
+        <div class="budget-meter-card">
+          <div class="meter-info-row">
+            <span>Your Budget: <strong id="meterBudget">$35.00</strong></span>
+            <span>Total: <strong id="meterTotal">$0.00</strong></span>
+          </div>
+          <div class="meter-bar-track">
+            <div class="meter-bar-fill" id="meterFill" style="width: 0%;"></div>
+          </div>
+          <p class="meter-status" id="meterStatus">You are within budget!</p>
+        </div>
+
+        <!-- AI Assistant Banner with [Get Some Help] Button on Screen 2 -->
+        <div class="ai-help-banner" id="aiHelpBanner">
+          <div class="ai-banner-content">
+            <div class="ai-banner-badge">✨ AI Shopping Assistant</div>
+            <h4 class="ai-banner-title">Need help deciding on your items?</h4>
+            <p class="ai-banner-desc">Our AI checks verified customer reviews, item quality, and community sentiment.</p>
+          </div>
+          <button type="button" class="big-action-btn secondary ai-get-help-btn" id="getHelpCartBtn" onclick="app.getAIHelpForCart()">
+            ✨ Get Some Help
+          </button>
+        </div>
+
+        <!-- Cart Items List (Quantity Selectors) -->
+        <div class="checkout-items-list" id="checkoutItemsList">
+          <!-- Populated by app.js -->
+        </div>
+
+        <!-- If cart is empty -->
+        <div class="empty-cart-state" id="emptyCartState" style="display: none;">
+          <div class="empty-icon">🛒</div>
+          <h3 class="empty-title">Your cart is empty</h3>
+          <p class="empty-desc">Tap on any item from the catalog to add it here!</p>
+          <button class="big-action-btn secondary" onclick="app.navToScreen('screen-catalog')">
+            Browse Items in Budget
+          </button>
+        </div>
+
+        <!-- Payment Options Card -->
+        <div class="checkout-section-card" id="paymentOptionsCard">
+          <h3 class="card-subtitle">Choose Payment Method</h3>
+          <p class="card-hint">No real charges will be made. Demo mode.</p>
+
+          <div class="payment-options-grid">
+            <label class="payment-option selected">
+              <input type="radio" name="payOption" value="cod" checked onchange="app.selectPayment(this)">
+              <div class="payment-icon">💵</div>
+              <div class="payment-meta">
+                <span class="pay-name">Cash on Delivery</span>
+                <span class="pay-sub">Pay in cash when order arrives</span>
+              </div>
+            </label>
+
+            <label class="payment-option">
+              <input type="radio" name="payOption" value="dummy-upi" onchange="app.selectPayment(this)">
+              <div class="payment-icon">⚡</div>
+              <div class="payment-meta">
+                <span class="pay-name">Instant Mock Pay</span>
+                <span class="pay-sub">Simulate 1-tap instant payment</span>
+              </div>
+            </label>
+
+            <label class="payment-option">
+              <input type="radio" name="payOption" value="dummy-card" onchange="app.selectPayment(this)">
+              <div class="payment-icon">💳</div>
+              <div class="payment-meta">
+                <span class="pay-name">Demo Card Payment</span>
+                <span class="pay-sub">No actual card details required</span>
+              </div>
+            </label>
+          </div>
+
+          <!-- Proceed to Pay Button -->
+          <button 
+            type="button" 
+            class="big-action-btn primary mt-4" 
+            id="proceedToPayBtn" 
+            onclick="app.placeOrder()"
+          >
+            Proceed to Pay (<span id="payBtnAmount">$0.00</span>)
+          </button>
+        </div>
+      </section>
+
+      <!-- ========================================== -->
+      <!-- SCREEN 3: SUCCESS & DELIVERY LOOKUP        -->
+      <!-- ========================================== -->
+      <section id="screen-success" class="screen-view">
+        <div class="success-card">
+          <div class="success-badge-icon">✓</div>
+          <h2 class="success-title">Order Placed!</h2>
+          <p class="success-subtitle">Your budget shopping was successful. Thank you for your order!</p>
+          
+          <div class="order-summary-box">
+            <div class="summary-line">
+              <span>Account:</span>
+              <strong id="successUserEmail" style="color: var(--color-text-main); font-size: 13px;">user@example.com</strong>
+            </div>
+            <div class="summary-line">
+              <span>Total Paid:</span>
+              <strong id="successTotalPaid">$0.00</strong>
+            </div>
+            <div class="summary-line">
+              <span>Payment Type:</span>
+              <span id="successPaymentType">Cash on Delivery</span>
+            </div>
+            <div class="summary-line">
+              <span>Items Ordered:</span>
+              <span id="successItemsCount">0 items</span>
+            </div>
+          </div>
+
+          <!-- Big Delivery Lookup Button -->
+          <button 
+            type="button" 
+            class="big-action-btn primary delivery-lookup-btn" 
+            id="deliveryLookupBtn"
+            onclick="app.toggleDeliveryLookup()"
+          >
+            🚚 Delivery Lookup
+          </button>
+
+          <!-- View My Orders Button -->
+          <button 
+            type="button" 
+            class="big-action-btn secondary mt-2" 
+            style="margin-top: 10px;"
+            onclick="app.navToScreen('screen-orders')"
+          >
+            📦 View All My Orders
+          </button>
+        </div>
+
+        <!-- Delivery Details Panel (Triggered by Lookup Button) -->
+        <div class="delivery-details-panel" id="deliveryDetailsPanel">
+          <div class="delivery-card-header">
+            <span class="delivery-tag">Live Delivery Lookup</span>
+            <span class="status-live-dot">● On Schedule</span>
+          </div>
+
+          <div class="detail-row highlight-box">
+            <div class="detail-col">
+              <span class="detail-label">Order ID</span>
+              <span class="detail-value order-id-text" id="deliveryOrderId">#BYB-83921</span>
+            </div>
+            <div class="detail-col">
+              <span class="detail-label">Delivery Date</span>
+              <span class="detail-value" id="deliveryDate">Tomorrow, Nov 18</span>
+            </div>
+          </div>
+
+          <div class="detail-row">
+            <div class="detail-col">
+              <span class="detail-label">Estimated Delivery Time</span>
+              <span class="detail-value time-badge" id="deliveryTime">2:00 PM – 4:30 PM</span>
+            </div>
+          </div>
+
+          <!-- Delivery Step Tracker -->
+          <div class="tracking-stepper">
+            <div class="step-item completed">
+              <div class="step-circle">✓</div>
+              <div class="step-content">
+                <strong>Order Confirmed</strong>
+                <small>Payment & budget verified</small>
+              </div>
+            </div>
+            <div class="step-item current">
+              <div class="step-circle">📦</div>
+              <div class="step-content">
+                <strong>Packing Items</strong>
+                <small>Ready at fulfillment center</small>
+              </div>
+            </div>
+            <div class="step-item">
+              <div class="step-circle">🚚</div>
+              <div class="step-content">
+                <strong>Out for Delivery</strong>
+                <small>Expected in delivery window</small>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Start New Order Button -->
+        <button type="button" class="big-action-btn secondary reset-btn" onclick="app.resetApp()">
+          🔄 Shop with New Budget
+        </button>
+      </section>
+
+      <!-- ========================================== -->
+      <!-- SCREEN 4: MY ORDERS (USER'S OWN ORDERS)    -->
+      <!-- ========================================== -->
+      <section id="screen-orders" class="screen-view">
+        <div class="screen-back-row">
+          <button class="icon-back-btn" onclick="app.navToScreen('screen-catalog')">
+            ← Back to Shop
+          </button>
+          <span class="step-indicator" id="ordersAccountBadge">Account</span>
+        </div>
+
+        <div class="screen-title-group">
+          <h2 class="screen-title">My Orders</h2>
+          <p class="screen-desc" id="ordersAccountDesc">Viewing orders placed with your account.</p>
+        </div>
+
+        <!-- Distinct User Database Info Badge -->
+        <div class="user-db-pill" id="userDbPill">
+          <span class="db-icon">🗄️</span>
+          <div class="db-text">
+            <span class="db-label">Isolated User Database:</span>
+            <code class="db-name" id="userDbNameText">byb_db_user@example.com</code>
+          </div>
+        </div>
+
+        <!-- Orders List Container -->
+        <div class="user-orders-list" id="userOrdersList">
+          <!-- Populated by app.js -->
+        </div>
+
+        <!-- Empty Orders State -->
+        <div class="empty-cart-state" id="emptyOrdersState" style="display: none;">
+          <div class="empty-icon">📦</div>
+          <h3 class="empty-title">No orders found</h3>
+          <p class="empty-desc">You have no orders saved in your personal database yet. Start browsing items within your budget!</p>
+          <button class="big-action-btn secondary" onclick="app.navToScreen('screen-catalog')">
+            Browse Items in Budget
+          </button>
+        </div>
+      </section>
+
+    </main>
+
+    <!-- ========================================== -->
+    <!-- ITEM DETAIL MODAL (Tap on item displays)   -->
+    <!-- ========================================== -->
+    <div class="modal-backdrop" id="itemDetailModal" onclick="app.closeItemModal(event)">
+      <div class="modal-card" onclick="event.stopPropagation()">
+        <button class="modal-close-btn" onclick="app.closeItemModal()" aria-label="Close modal">✕</button>
+        
+        <div class="modal-header-icon" id="modalIcon">🛍️</div>
+        
+        <div class="modal-tag" id="modalTag">Category</div>
+        <h3 class="modal-title" id="modalTitle">Product Name</h3>
+        <div class="modal-price-row">
+          <span class="modal-price" id="modalPrice">$0.00</span>
+          <span class="modal-budget-fit" id="modalBudgetFit">Fits in your budget!</span>
+        </div>
+
+        <p class="modal-desc" id="modalDesc">Detailed description of this item...</p>
+
+        <div class="modal-highlights" id="modalHighlights">
+          <!-- Feature tags -->
+        </div>
+
+        <div class="modal-action-row">
+          <button type="button" class="big-action-btn primary" id="modalAddBtn" onclick="app.addCurrentModalItem()">
+            + Add to My Order
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- ========================================== -->
+    <!-- AUTH MODAL: SIGN UP & LOG IN               -->
+    <!-- ========================================== -->
+    <div class="modal-backdrop" id="authModal" onclick="app.closeAuthModal(event)">
+      <div class="modal-card auth-modal-card" onclick="event.stopPropagation()">
+        <button class="modal-close-btn" onclick="app.closeAuthModal()" aria-label="Close modal">✕</button>
+        
+        <div class="auth-header">
+          <div class="auth-badge-icon" id="authBadgeIcon">🔐</div>
+          <h3 class="auth-modal-title" id="authModalTitle">Sign Up for an Account</h3>
+          <p class="auth-modal-subtitle" id="authModalSubtitle">
+            Create your account to confirm your order and set up your private user database.
+          </p>
+        </div>
+
+        <!-- Auth Tabs: Sign Up vs Log In -->
+        <div class="auth-tabs">
+          <button type="button" class="auth-tab active" id="tabSignUp" onclick="app.switchAuthMode('signup')">
+            Create Account
+          </button>
+          <button type="button" class="auth-tab" id="tabLogin" onclick="app.switchAuthMode('login')">
+            Log In
+          </button>
+        </div>
+
+        <!-- Context Callout Banner -->
+        <div class="auth-callout" id="authCallout">
+          💡 <strong>Order Ready!</strong> Create your account now to link your order to your own private database.
+        </div>
+
+        <!-- Error Alert -->
+        <div class="auth-error-alert" id="authErrorAlert" style="display: none;"></div>
+
+        <!-- Form -->
+        <form id="authForm" onsubmit="app.handleAuthSubmit(event)">
+          <div class="auth-field" id="authNameGroup">
+            <label class="auth-label" for="authName">Your Name</label>
+            <input 
+              type="text" 
+              id="authName" 
+              class="auth-input" 
+              placeholder="e.g. Alex Taylor" 
+              autocomplete="name"
+            >
+          </div>
+
+          <div class="auth-field">
+            <label class="auth-label" for="authEmail">Email Address</label>
+            <input 
+              type="email" 
+              id="authEmail" 
+              class="auth-input" 
+              placeholder="name@example.com" 
+              required 
+              autocomplete="email"
+            >
+          </div>
+
+          <div class="auth-field">
+            <label class="auth-label" for="authPassword">Password</label>
+            <input 
+              type="password" 
+              id="authPassword" 
+              class="auth-input" 
+              placeholder="At least 4 characters" 
+              required 
+              autocomplete="current-password"
+            >
+          </div>
+
+          <button type="submit" class="big-action-btn primary auth-submit-btn" id="authSubmitBtn">
+            Create Account & Confirm Order ➔
+          </button>
+        </form>
+
+        <div class="auth-footer-toggle">
+          <span id="authTogglePrompt">Already have an account?</span>
+          <button type="button" class="auth-link-btn" id="authToggleBtn" onclick="app.toggleAuthMode()">
+            Log In instead
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- ========================================== -->
+    <!-- AI HELP MODAL (QUALITY & REVIEWS)          -->
+    <!-- ========================================== -->
+    <div class="modal-backdrop" id="aiHelpModal" onclick="app.closeAIHelpModal(event)">
+      <div class="modal-card ai-modal-card" onclick="event.stopPropagation()">
+        <button class="modal-close-btn" onclick="app.closeAIHelpModal()" aria-label="Close modal">✕</button>
+
+        <div class="ai-modal-header">
+          <div class="ai-modal-tag" id="aiModalTag">✨ AI Shopping Assistant</div>
+          <h3 class="ai-modal-title" id="aiModalItemTitle">Product Analysis</h3>
+          <p class="ai-modal-subtitle" id="aiModalItemSubtitle">Checking item quality & what other buyers think</p>
+        </div>
+
+        <!-- AI Loading Spinner State -->
+        <div class="ai-loading-panel" id="aiLoadingPanel" style="display: none;">
+          <div class="ai-pulse-spinner"></div>
+          <p class="ai-loading-primary">Consulting backend AI model...</p>
+          <span class="ai-loading-hint">Analyzing material durability & verified customer reviews</span>
+        </div>
+
+        <!-- AI Dynamic Results Container -->
+        <div class="ai-results-panel" id="aiResultsPanel">
+          <!-- Populated dynamically by app.js -->
+        </div>
+
+        <div class="ai-modal-footer">
+          <button type="button" class="big-action-btn primary" onclick="app.closeAIHelpModal()">
+            Got It, Thanks! ✓
+          </button>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <script src="app.js"></script>
+</body>
+</html>
