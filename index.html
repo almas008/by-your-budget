@@ -519,6 +519,87 @@
       </div>
     </div>
 
+    <!-- ========================================== -->
+    <!-- FLOATING FEEDBACK BUTTON                   -->
+    <!-- ========================================== -->
+    <button type="button" class="floating-feedback-btn" onclick="app.openFeedbackModal()" title="Leave Feedback">
+      💬 Feedback
+    </button>
+
+    <!-- ========================================== -->
+    <!-- FEEDBACK MODAL (STEP 10 REQUIREMENT)       -->
+    <!-- ========================================== -->
+    <div class="modal-backdrop" id="feedbackModal" onclick="app.closeFeedbackModal(event)">
+      <div class="modal-card feedback-modal-card" onclick="event.stopPropagation()">
+        <button class="modal-close-btn" onclick="app.closeFeedbackModal()" aria-label="Close modal">✕</button>
+
+        <div id="feedbackFormView">
+          <div class="feedback-header">
+            <div class="feedback-badge-icon">💬</div>
+            <h3 class="feedback-title">We Value Your Feedback</h3>
+            <p class="feedback-subtitle">Tell us what you love or what we can improve in By Your Budget.</p>
+          </div>
+
+          <!-- Star Rating -->
+          <div class="feedback-rating-group">
+            <span class="feedback-rating-label">How would you rate your experience?</span>
+            <div class="feedback-stars" id="feedbackStars">
+              <button type="button" class="star-btn" onclick="app.setFeedbackRating(1)" aria-label="1 star">⭐</button>
+              <button type="button" class="star-btn" onclick="app.setFeedbackRating(2)" aria-label="2 stars">⭐</button>
+              <button type="button" class="star-btn" onclick="app.setFeedbackRating(3)" aria-label="3 stars">⭐</button>
+              <button type="button" class="star-btn" onclick="app.setFeedbackRating(4)" aria-label="4 stars">⭐</button>
+              <button type="button" class="star-btn active" onclick="app.setFeedbackRating(5)" aria-label="5 stars">⭐</button>
+            </div>
+            <span class="rating-text-hint" id="ratingTextHint">Excellent! (5/5)</span>
+          </div>
+
+          <!-- Feedback Type Chips -->
+          <div class="feedback-type-group">
+            <span class="feedback-label">What kind of feedback is this?</span>
+            <div class="feedback-chips">
+              <button type="button" class="feedback-chip active" onclick="app.setFeedbackType('General', this)">💬 General</button>
+              <button type="button" class="feedback-chip" onclick="app.setFeedbackType('Idea / Feature', this)">💡 Feature Request</button>
+              <button type="button" class="feedback-chip" onclick="app.setFeedbackType('Bug / Issue', this)">🐞 Report an Issue</button>
+              <button type="button" class="feedback-chip" onclick="app.setFeedbackType('Compliment', this)">❤️ Love it</button>
+            </div>
+          </div>
+
+          <!-- Feedback Text -->
+          <form onsubmit="app.submitFeedback(event)">
+            <div class="feedback-input-group">
+              <label class="feedback-label" for="feedbackComment">Your Thoughts:</label>
+              <textarea 
+                id="feedbackComment" 
+                class="feedback-textarea" 
+                rows="3" 
+                placeholder="What did you like? What should we add next?" 
+                required
+              ></textarea>
+            </div>
+
+            <button type="submit" class="big-action-btn primary mt-3" style="margin-top: 14px;">
+              Send Feedback ➔
+            </button>
+          </form>
+        </div>
+
+        <!-- Success Confirmation View -->
+        <div id="feedbackSuccessView" style="display: none; text-align: center; padding: 20px 0;">
+          <div class="feedback-success-icon">🎉</div>
+          <h3 style="font-size: 20px; font-weight: 800; color: var(--color-green-dark); margin-bottom: 8px;">
+            Thank you for your feedback!
+          </h3>
+          <p style="font-size: 14px; color: var(--color-text-muted); line-height: 1.5; margin-bottom: 20px;">
+            Your response has been saved. Your thoughts help make By Your Budget better for everyone!
+          </p>
+          <button type="button" class="big-action-btn primary" onclick="app.closeFeedbackModal()">
+            Done ✓
+          </button>
+        </div>
+
+      </div>
+    </div>
+
   </div>
 
   <script src="app.js"></script>

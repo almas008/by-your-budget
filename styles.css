@@ -1975,3 +1975,181 @@ body {
 .ai-modal-footer {
   margin-top: 8px;
 }
+
+/* ==========================================================================
+   FEEDBACK BUTTON & MODAL (STEP 10 REQUIREMENT)
+   ========================================================================== */
+.floating-feedback-btn {
+  position: fixed;
+  bottom: 22px;
+  right: 20px;
+  background-color: #ffffff;
+  border: 2px solid var(--color-green-primary);
+  color: var(--color-green-dark);
+  font-family: inherit;
+  font-size: 13px;
+  font-weight: 800;
+  padding: 8px 16px;
+  border-radius: var(--radius-full);
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.15);
+  cursor: pointer;
+  z-index: 45;
+  transition: transform 0.15s ease, background-color 0.2s ease, box-shadow 0.2s ease;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.floating-feedback-btn:hover {
+  transform: translateY(-2px);
+  background-color: var(--color-green-light);
+  box-shadow: 0 6px 18px rgba(46, 125, 50, 0.25);
+}
+
+.floating-feedback-btn:active {
+  transform: scale(0.96);
+}
+
+.feedback-modal-card {
+  max-width: 440px;
+}
+
+.feedback-header {
+  text-align: center;
+  margin-bottom: 16px;
+}
+
+.feedback-badge-icon {
+  font-size: 36px;
+  margin-bottom: 4px;
+}
+
+.feedback-title {
+  font-size: 20px;
+  font-weight: 800;
+  color: var(--color-text-main);
+  letter-spacing: -0.3px;
+}
+
+.feedback-subtitle {
+  font-size: 13px;
+  color: var(--color-text-muted);
+  margin-top: 4px;
+}
+
+/* Star rating selector */
+.feedback-rating-group {
+  text-align: center;
+  background: var(--color-bg);
+  border: 1.5px solid var(--color-green-mint);
+  border-radius: var(--radius-md);
+  padding: 12px;
+  margin-bottom: 14px;
+}
+
+.feedback-rating-label {
+  display: block;
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--color-text-main);
+  margin-bottom: 8px;
+}
+
+.feedback-stars {
+  display: flex;
+  justify-content: center;
+  gap: 8px;
+}
+
+.star-btn {
+  background: transparent;
+  border: none;
+  font-size: 26px;
+  cursor: pointer;
+  filter: grayscale(1) opacity(0.35);
+  transition: transform 0.12s ease, filter 0.15s ease;
+}
+
+.star-btn.active {
+  filter: none;
+  transform: scale(1.15);
+}
+
+.star-btn:hover {
+  transform: scale(1.25);
+}
+
+.rating-text-hint {
+  display: block;
+  font-size: 12px;
+  font-weight: 800;
+  color: var(--color-green-primary);
+  margin-top: 6px;
+}
+
+/* Feedback chips */
+.feedback-type-group {
+  margin-bottom: 14px;
+}
+
+.feedback-label {
+  display: block;
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--color-text-main);
+  margin-bottom: 8px;
+}
+
+.feedback-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.feedback-chip {
+  background: #ffffff;
+  border: 1.5px solid var(--color-green-mint);
+  color: var(--color-text-muted);
+  font-family: inherit;
+  font-size: 12px;
+  font-weight: 700;
+  padding: 6px 12px;
+  border-radius: var(--radius-full);
+  cursor: pointer;
+  transition: all 0.12s ease;
+}
+
+.feedback-chip.active {
+  background: var(--color-green-mint);
+  border-color: var(--color-green-primary);
+  color: var(--color-green-dark);
+  font-weight: 800;
+}
+
+.feedback-input-group {
+  margin-bottom: 10px;
+}
+
+.feedback-textarea {
+  width: 100%;
+  padding: 10px 14px;
+  border: 2px solid var(--color-green-mid);
+  border-radius: var(--radius-md);
+  font-family: inherit;
+  font-size: 14px;
+  color: var(--color-text-main);
+  resize: vertical;
+  min-height: 80px;
+  outline: none;
+  transition: border-color 0.15s ease, box-shadow 0.15s ease;
+}
+
+.feedback-textarea:focus {
+  border-color: var(--color-green-primary);
+  box-shadow: 0 0 0 3px rgba(46, 125, 50, 0.18);
+}
+
+.feedback-success-icon {
+  font-size: 48px;
+  margin-bottom: 12px;
+}

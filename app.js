@@ -472,6 +472,10 @@ class BudgetApp {
     this.currentUser = this.loadCurrentUser();
     this.userDb = this.currentUser ? new UserDatabase(this.currentUser.email) : null;
 
+    // Feedback state
+    this.feedbackRating = 5;
+    this.feedbackType = 'General';
+
     this.initElements();
     this.bindEvents();
     this.updateAuthUI();
@@ -568,6 +572,13 @@ class BudgetApp {
     this.aiModalItemSubtitle = document.getElementById('aiModalItemSubtitle');
     this.aiLoadingPanel = document.getElementById('aiLoadingPanel');
     this.aiResultsPanel = document.getElementById('aiResultsPanel');
+
+    // Feedback Modal Elements
+    this.feedbackModal = document.getElementById('feedbackModal');
+    this.feedbackFormView = document.getElementById('feedbackFormView');
+    this.feedbackSuccessView = document.getElementById('feedbackSuccessView');
+    this.feedbackComment = document.getElementById('feedbackComment');
+    this.ratingTextHint = document.getElementById('ratingTextHint');
   }
 
   bindEvents() {
@@ -1482,6 +1493,79 @@ class BudgetApp {
     } else {
       this.floatingBar.classList.remove('visible');
     }
+  }
+
+  // ==========================================
+  // FEEDBACK SYSTEM (STEP 10 REQUIREMENT)
+  // ==========================================
+  openFeedbackModal() {
+    if (this.feedbackFormView) this.feedbackFormView.style.display = 'block';
+    if (this.feedbackSuccessView) this.feedbackSuccessView.style.display = 'none';
+    if (this.feedbackComment) this.feedbackComment.value = '';
+    this.setFeedbackRating(5);
+    if (this.feedbackModal) this.feedbackModal.classList.add('open');
+  }
+
+  closeFeedbackModal(event) {
+    if (event && event.target !== this.feedbackModal) return;
+    if (this.feedbackModal) this.feedbackModal.classList.remove('open');
+  }
+
+  setFeedbackRating(stars) {
+    this.feedbackRating = stars;
+    const starButtons = document.querySelectorAll('#feedbackStars .star-btn');
+    starButtons.forEach((btn, idx) => {
+      if (idx < stars) {
+        btn.classList.add('active');
+      } else {
+        btn.classList.remove('active');
+      }
+    });
+
+    const hints = {
+      1: 'Poor (1/5)',
+      2: 'Fair (2/5)',
+      3: 'Good (3/5)',
+      4: 'Great! (4/5)',
+      5: 'Excellent! (5/5)'
+    };
+    if (this.ratingTextHint) {
+      this.ratingTextHint.textContent = hints[stars] || `${stars}/5`;
+    }
+  }
+
+  setFeedbackType(type, buttonEl) {
+    this.feedbackType = type;
+    document.querySelectorAll('.feedback-chips .feedback-chip').forEach(chip => {
+      chip.classList.remove('active');
+    });
+    if (buttonEl) buttonEl.classList.add('active');
+  }
+
+  submitFeedback(event) {
+    event.preventDefault();
+    const comment = this.feedbackComment ? this.feedbackComment.value.trim() : '';
+    if (!comment) return;
+
+    const feedbackEntry = {
+      id: `fb_${Date.now()}`,
+      rating: this.feedbackRating,
+      type: this.feedbackType,
+      comment: comment,
+      userEmail: this.currentUser ? this.currentUser.email : 'guest',
+      date: new Date().toISOString()
+    };
+
+    try {
+      const existing = JSON.parse(localStorage.getItem('byb_user_feedback') || '[]');
+      existing.unshift(feedbackEntry);
+      localStorage.setItem('byb_user_feedback', JSON.stringify(existing));
+    } catch (e) {
+      console.warn("Could not save feedback:", e);
+    }
+
+    if (this.feedbackFormView) this.feedbackFormView.style.display = 'none';
+    if (this.feedbackSuccessView) this.feedbackSuccessView.style.display = 'block';
   }
 
   render() {
